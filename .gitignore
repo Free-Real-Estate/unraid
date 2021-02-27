@@ -1,3 +1,6 @@
 letsencrypt/*
 filebrowser/filebrowser.db
 users/data
+containerdb.json
+__pycache__/
+.vscode/
