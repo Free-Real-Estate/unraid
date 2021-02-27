@@ -26,6 +26,9 @@ ln -s $(pwd)/filebrowser/filebrowser.db /etc/filebrowser/database.db
 
 Finally to manage user you can use the `user_managment.py` script
 
+
+this will start the nginx-php docker under the `username.mydomain.com`  host and code-server under `code-username.mydomain.com` 
+
 ### User managment script
 
 first you will need to change a few things in the script config variable
@@ -71,5 +74,3 @@ Remove the user from fileserver and remove his code-server and nginx-php instanc
 ```sh
 ./user_managment.py start_all/stop_all
 ```
-
-this will start the nginx-php docker under the `username.mydomain.com`  host and code-server under `code-username.mydomain.com` 
