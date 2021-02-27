@@ -24,10 +24,52 @@ cp filebrowser/.filebrowser.json /etc/filebrowser/
 ln -s $(pwd)/filebrowser/filebrowser.db /etc/filebrowser/database.db
 ```
 
-Finally to add a new user simply run the following script
+Finally to manage user you can use the `user_managment.py` script
+
+### User managment script
+
+first you will need to change a few things in the script config variable
+
+The folder in wich the data of every user is stored :
+
+```py
+'users_data': '/home/pog/docker/test/v1/users/data/'
+```
+
+and the path to the user nginx config
+
+```py
+'web_image_volume': {
+        'web_config': '/home/pog/docker/test/v1/nginx_user.conf'
+}
+```
+
+#### Add user
 
 ```sh
-./add_user.sh <username> <password>
+./user_managment.py add <username> <password>
+```
+
+This will add the user to `filebrowser` and create a code-server and nginx-php instances for him
+
+#### Del user
+
+```sh
+./user_managment.py del <username>
+```
+
+Remove the user from fileserver and remove his code-server and nginx-php instances
+
+#### Start/Stop user web-server and code-server
+
+```sh
+./user_managment.py start/stop <username>
+```
+
+#### Start_all/Stop_all web-server and code-server
+
+```sh
+./user_managment.py start_all/stop_all
 ```
 
 this will start the nginx-php docker under the `username.mydomain.com`  host and code-server under `code-username.mydomain.com` 
