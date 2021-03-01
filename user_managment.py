@@ -8,6 +8,7 @@ from sys import argv
 config = {
     'code_image': 'ghcr.io/linuxserver/code-server',
     'users_data': '/home/pog/docker/test/v1/users/data/',
+    'users_code_data': '/home/pog/docker/test/v1/users/code-data/',
     'web_image': 'trafex/alpine-nginx-php7',
     'web_image_volume': {
         'web_config': '/home/pog/docker/test/v1/nginx_user.conf'
@@ -54,7 +55,7 @@ def start_user(user):
     os.system('docker run -d --restart=unless-stopped --name=' + user +
               ' --net=v1_free_real_estate -v ' + config['users_data'] + user + ':/var/www/html:rw -v '+config['web_image_volume']['web_config'] + ':/etc/nginx/nginx.conf ' + config['web_image'])
     os.system('docker run -d --net=v1_free_real_estate --name=code-' + user + ' -e PUID=1000 -e PGID=1000 -e TZ=Europe/Paris -e HASHED_PASSWORD=' + user_list[user]['hash_pass'] + ' -v ' +
-              config['users_data'] + user + ':/config/workspace --restart unless-stopped ' + config['code_image'])
+              config['users_code_data'] + user + ':/config -v ' + config['users_data'] + user + ':/config/workspace --restart unless-stopped ' + config['code_image'])
     user_list[user]['web_container_name'] = user
     user_list[user]['web_container_id'] = subprocess.getoutput(
         'docker ps -aqf "name=' + user + '"')
