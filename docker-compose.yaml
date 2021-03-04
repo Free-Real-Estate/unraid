@@ -3,6 +3,7 @@ services:
   proxy:
     container_name: "proxy"
     image: nginx
+    restart: always
     ports:
       - "80:80"
       - "443:443"
@@ -14,6 +15,7 @@ services:
       - free_real_estate
   files:
     image: filebrowser/filebrowser:v2-alpine
+    restart: always
     container_name: "files"
     volumes:
       - ./users/data:/srv
@@ -33,9 +35,33 @@ services:
     ports:
       - "8000:9000"
       - "9000:9000"
+  netdata:
+    image: netdata/netdata
+    container_name: netdata
+    restart: unless-stopped
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - apparmor:unconfined
+    volumes:
+      - netdataconfig:/etc/netdata
+      - netdatalib:/var/lib/netdata
+      - netdatacache:/var/cache/netdata
+      - /etc/passwd:/host/etc/passwd:ro
+      - /etc/group:/host/etc/group:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /etc/os-release:/host/etc/os-release:ro
+    ports:
+      - "19999:19999"
+    networks:
+      - free_real_estate
 
 volumes:
   portainer_data:
+  netdataconfig:
+  netdatalib:
+  netdatacache:
 
 networks:
   free_real_estate:

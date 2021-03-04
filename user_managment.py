@@ -50,19 +50,32 @@ def load_json(path):
         user_list = json.load(infile)
 
 
-def start_user(user):
+def start_code(user):
     global user_list
-    os.system('docker run -d --restart=unless-stopped --name=' + user +
-              ' --net=v1_free_real_estate -v ' + config['users_data'] + user + ':/var/www/html:rw -v '+config['web_image_volume']['web_config'] + ':/etc/nginx/nginx.conf ' + config['web_image'])
     os.system('docker run -d --net=v1_free_real_estate --name=code-' + user + ' -e PUID=1000 -e PGID=1000 -e TZ=Europe/Paris -e HASHED_PASSWORD=' + user_list[user]['hash_pass'] + ' -v ' +
               config['users_code_data'] + user + ':/config -v ' + config['users_data'] + user + ':/config/workspace --restart unless-stopped ' + config['code_image'])
-    user_list[user]['web_container_name'] = user
-    user_list[user]['web_container_id'] = subprocess.getoutput(
-        'docker ps -aqf "name=' + user + '"')
     user_list[user]['code_container_name'] = 'code-'+user
     user_list[user]['code_container_id'] = subprocess.getoutput(
         'docker ps -aqf "name=code-' + user + '"')
-    print(user + ' containers sarted')
+    print(user + ' vs-code started')
+
+
+def start_web(user):
+    global user_list
+    os.system('docker run -d --restart=unless-stopped --name=' + user +
+              ' --net=v1_free_real_estate -v ' + config['users_data'] + user + ':/var/www/html:rw -v '+config['web_image_volume']['web_config'] + ':/etc/nginx/nginx.conf ' + config['web_image'])
+
+    user_list[user]['web_container_name'] = user
+    user_list[user]['web_container_id'] = subprocess.getoutput(
+        'docker ps -aqf "name=' + user + '"')
+    print(user + ' web started')
+
+
+def start_user(user):
+    global user_list
+    start_web(user)
+    start_code(user)
+    print(user + ' containers started')
 
 
 def stop_user(user):
@@ -82,6 +95,8 @@ def add_user(user, password):
     user_list[user]['hash_pass'] = subprocess.getoutput(
         'echo -n \"' + password + '\" | sha256sum | cut -d\' \' -f1')
     start_user(user)
+    os.system('cp ./template/* ./users/data/' + user)
+    os.system('chmod a+rwx ./users/data/' + user)
     print(user + ' added')
 
 
@@ -91,6 +106,7 @@ def del_user(user):
     os.system('filebrowser users rm ' + user)
     os.system('docker start files')
     stop_user(user)
+    os.system('sudo rm -rf ./users/data/' + user)
     del user_list[user]
     print(user + ' deleted')
 
