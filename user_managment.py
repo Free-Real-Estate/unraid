@@ -52,7 +52,7 @@ def load_json(path):
 
 def start_code(user):
     global user_list
-    os.system('docker run -d --net=v1_free_real_estate --name=code-' + user + ' -e PUID=1000 -e PGID=1000 -e TZ=Europe/Paris -e HASHED_PASSWORD=' + user_list[user]['hash_pass'] + ' -v ' +
+    os.system('docker run -d --net=v1_free_real_estate --name=code-' + user + ' -e DOCKER_MODS=linuxserver/mods:code-server-php -e PUID=1000 -e PGID=1000 -e TZ=Europe/Paris -e HASHED_PASSWORD=' + user_list[user]['hash_pass'] + ' -v ' +
               config['users_code_data'] + user + ':/config -v ' + config['users_data'] + user + ':/config/workspace --restart unless-stopped ' + config['code_image'])
     user_list[user]['code_container_name'] = 'code-'+user
     user_list[user]['code_container_id'] = subprocess.getoutput(
@@ -73,6 +73,17 @@ def start_web(user):
 
 def start_user(user):
     global user_list
+    os.system('docker run -d --net=v1_free_real_estate --name=' + user + ' -e PUID=1000 -e PGID=1000 -e TZ=Europe/Paris -e HASHED_PASSWORD=' + user_list[user]['hash_pass'] + ' -v ' +
+              config['users_code_data'] + user + ':/config -v ' + config['users_data'] + user + ':/config/workspace -v ' + config['web_image_volume']['web_config'] + ':/etc/nginx/nginx.conf ' ' --restart unless-stopped ' + "fre-user-docker:latest")
+    user_list[user]['code_container_name'] = user
+    user_list[user]['code_container_id'] = subprocess.getoutput(
+        'docker ps -aqf "name=code-' + user + '"')
+    print(user + ' vs-code started')
+    print(user + ' containers started')
+
+
+def start_user_old(user):
+    global user_list
     start_web(user)
     start_code(user)
     print(user + ' containers started')
@@ -80,7 +91,7 @@ def start_user(user):
 
 def stop_user(user):
     global user_list
-    os.system('docker rm -f ' + user_list[user]['web_container_name'])
+    # os.system('docker rm -f ' + user_list[user]['web_container_name'])
     os.system('docker rm -f ' + user_list[user]['code_container_name'])
     print(user + ' containers stoped')
 
@@ -95,8 +106,8 @@ def add_user(user, password):
     user_list[user]['hash_pass'] = subprocess.getoutput(
         'echo -n \"' + password + '\" | sha256sum | cut -d\' \' -f1')
     start_user(user)
-    os.system('cp ./template/* ./users/data/' + user)
-    os.system('chmod a+rwx ./users/data/' + user)
+    os.system('sudo cp ./template/* ./users/data/' + user)
+    os.system('sudo chmod a+rwx ./users/data/' + user + '/*')
     print(user + ' added')
 
 
