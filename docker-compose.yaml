@@ -1,46 +1,40 @@
 version: "3"
 services:
   proxy:
-    container_name: "proxy"
-    image: nginx
-    restart: always
+    image: traefik:v2.5
+    container_name: proxy
+    restart: unless-stopped
+    networks:
+      - fre
+      - default
     ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/conf.d:/etc/nginx/conf.d
-    networks:
-      - free_real_estate
-  files:
-    image: filebrowser/filebrowser:v2-alpine
-    restart: always
-    container_name: "files"
-    volumes:
-      - ./users/data:/srv
-      - ./filebrowser/filebrowser.db:/database.db
-      - ./filebrowser/.filebrowser.json:/.filebrowser.json
-    networks:
-      - free_real_estate
-  portainer:
-    image: portainer/portainer-ce
-    container_name: portainer
-    restart: always
+      - "${PROXY_PORT}:80"
+      - 8080:8080
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - portainer_data:/data
+      - ./config/traefik.yml:/etc/traefik/traefik.yml
+    labels:
+      - traefik.http.routers.api.rule=Host(`traefik.${DOMAIN}`)
+      - traefik.http.routers.api.service=api@internal
+  file-server:
+    image: filebrowser/filebrowser:s6
+    container_name: file-server
+    restart: unless-stopped
     networks:
-      - free_real_estate
+      - fre
     ports:
-      - "8000:9000"
-      - "9000:9000"
-  
+      - 8081:80
+    volumes:
+      - ./config/filebrowser.json:/config/settings.json
+      - ./data/users:/srv
+      - file_db:/database
+    labels:
+      - traefik.http.routers.file-server.rule=Host(`files.${DOMAIN}`)
+
 volumes:
-  portainer_data:
-  netdataconfig:
-  netdatalib:
-  netdatacache:
+  file_db:
+  code:
 
 networks:
-  free_real_estate:
-    driver: bridge
+  fre:
+  default:
