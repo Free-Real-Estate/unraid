@@ -15,6 +15,6 @@ docker run -d \
   -e PGID=1000 \
   -e TZ=Europe/Paris \
   -e PASSWORD=$2 \
-  -v /home/pog/docker/test/v1/users/data/$1:/config/workspace \
+  -v /home/fre/users/data/$1:/config/workspace \
   --restart unless-stopped \
   ghcr.io/linuxserver/code-server

@@ -7,11 +7,11 @@ from sys import argv
 
 config = {
     'code_image': 'ghcr.io/linuxserver/code-server',
-    'users_data': '/home/pog/docker/test/v1/users/data/',
-    'users_code_data': '/home/pog/docker/test/v1/users/code-data/',
+    'users_data': '/home/fre/users/data/',
+    'users_code_data': '/home/fre/users/code-data/',
     'web_image': 'trafex/alpine-nginx-php7',
     'web_image_volume': {
-        'web_config': '/home/pog/docker/test/v1/nginx_user.conf'
+        'web_config': '/home/fre/nginx_user.conf'
     }
 }
 
