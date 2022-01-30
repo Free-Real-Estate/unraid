@@ -25,7 +25,7 @@ docker-compose up -d
 the `filebrowser` application is also required on your host machine in order to be able to add an user while the docker is down. simply run those commands to install it
 
 ```sh
-curl -fsSL https://filebrowser.org/get.sh | bash
+curl -fsSL https://raw.githubusercontent.com/filebrowser/get/master/get.sh | bash
 mkdir -p /etc/filebrowser
 cp filebrowser/.filebrowser.json /etc/filebrowser/
 ln -s $(pwd)/filebrowser/filebrowser.db /etc/filebrowser/database.db
