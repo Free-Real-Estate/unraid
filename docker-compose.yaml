@@ -17,9 +17,9 @@ services:
     restart: always
     container_name: "files"
     volumes:
-      - ./users/data:/srv
-      - ./filebrowser/filebrowser.db:/database.db
-      - ./filebrowser/.filebrowser.json:/.filebrowser.json
+      - /home/fre/fre/users/data:/srv
+      - /home/fre/fre/filebrowser/filebrowser.db:/database.db
+      - /home/fre/fre/filebrowser/.filebrowser.json:/.filebrowser.json
     networks:
       - free_real_estate
   portainer:
@@ -31,9 +31,6 @@ services:
       - portainer_data:/data
     networks:
       - free_real_estate
-    ports:
-      - "8000:9000"
-      - "9000:9000"
   
 volumes:
   portainer_data:
