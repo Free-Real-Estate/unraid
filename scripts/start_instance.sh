@@ -12,11 +12,11 @@ docker run \
   -e VSCODE_EXTENSION_ID="yandeu.five-server|bmewburn.vscode-intelephense-client" \
   -v $(pwd)/../data/users/$1/.code:/config \
   -v $(pwd)/../data/users/$1/site:/config/workspace \
-  --network fre-ng_fre \
-  --label traefik.http.routers.$1-code.rule=Host\(\`$1-code.${DOMAIN}.${TLD}\`\) \
-  --label traefik.http.services.$1-code.loadbalancer.server.port=8443 \
-  --label traefik.http.routers.$1-code.service=$1-code \
-  --label traefik.http.routers.$1.rule=Host\(\`$1.${DOMAIN}.${TLD}\`\) \
-  --label traefik.http.services.$1.loadbalancer.server.port=80 \
-  --label traefik.http.routers.$1.service=$1 \
+  --network unraid_fre \
   --rm docker.io/fre/code-php
+  # --label traefik.http.routers.code-$1.rule=Host\(\`code-$1.${DOMAIN}\`\) \
+  # --label traefik.http.services.code-$1.loadbalancer.server.port=8443 \
+  # --label traefik.http.routers.code-$1.service=code-$1 \
+  # --label traefik.http.routers.$1.rule=Host\(\`$1.${DOMAIN}\`\) \
+  # --label traefik.http.services.$1.loadbalancer.server.port=80 \
+  # --label traefik.http.routers.$1.service=$1 \

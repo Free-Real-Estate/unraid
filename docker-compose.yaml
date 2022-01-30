@@ -14,7 +14,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./config/traefik.yml:/etc/traefik/traefik.yml
     labels:
-      - traefik.http.routers.api.rule=Host(`traefik.${DOMAIN}`)
+      - traefik.http.routers.api.rule=Host(`traefik.${HOSTNAME}`)
       - traefik.http.routers.api.service=api@internal
   file-server:
     image: filebrowser/filebrowser:s6
@@ -25,13 +25,9 @@ services:
     volumes:
       - ./config/filebrowser.json:/config/settings.json
       - ./data/users:/srv
-      - file_db:/database
+      - ./data/db:/database
     labels:
       - traefik.http.routers.file-server.rule=Host(`files.${DOMAIN}`)
-
-volumes:
-  file_db:
-  code:
 
 networks:
   fre:

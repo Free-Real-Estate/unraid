@@ -10,12 +10,11 @@ services:
     ports:
       - "${PROXY_PORT}:80"
     volumes:
-      - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./config/nginx/conf.d:/etc/nginx/conf.d
+      - ./config/nginx-proxy/nginx.conf:/etc/nginx/nginx.conf
+      - ./config/nginx-proxy/conf.d:/etc/nginx/conf.d
     environment:
       - DOMAIN=fre
       - TLD=localhost
-
   file-server:
     image: filebrowser/filebrowser:s6
     container_name: file-server
@@ -25,11 +24,19 @@ services:
     volumes:
       - ./config/filebrowser.json:/config/settings.json
       - ./data/users:/srv
-      - file_db:/database
+      - ./data/db:/database
+  portainer:
+    image: portainer/portainer-ce
+    container_name: portainer
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - fre
 
 volumes:
-  file_db:
-  code:
+  portainer_data:
 
 networks:
   fre:
