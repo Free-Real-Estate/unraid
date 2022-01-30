@@ -12,7 +12,8 @@ docker run \
   -e VSCODE_EXTENSION_ID="yandeu.five-server|bmewburn.vscode-intelephense-client" \
   -v $(pwd)/../data/users/$1/.code:/config \
   -v $(pwd)/../data/users/$1/site:/config/workspace \
-  --network unraid_fre \
+  -d \
+  --network fre_fre \
   --rm docker.io/fre/code-php
   # --label traefik.http.routers.code-$1.rule=Host\(\`code-$1.${DOMAIN}\`\) \
   # --label traefik.http.services.code-$1.loadbalancer.server.port=8443 \
