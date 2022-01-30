@@ -1,21 +1,18 @@
 version: "3"
 services:
-  proxy-traefik:
-    image: traefik:v2.5
-    container_name: proxy-traefik
+  proxy-nginx:
+    container_name: proxy-nginx
+    image: nginx
     restart: unless-stopped
     networks:
       - fre
       - default
     ports:
       - "${PROXY_PORT}:80"
-      - 8080:8080
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./config/traefik.yml:/etc/traefik/traefik.yml
-    labels:
-      - traefik.http.routers.api.rule=Host(`traefik.${DOMAIN}`)
-      - traefik.http.routers.api.service=api@internal
+      - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./config/nginx/conf.d:/etc/nginx/conf.d
+
   file-server:
     image: filebrowser/filebrowser:s6
     container_name: file-server
@@ -26,8 +23,6 @@ services:
       - ./config/filebrowser.json:/config/settings.json
       - ./data/users:/srv
       - file_db:/database
-    labels:
-      - traefik.http.routers.file-server.rule=Host(`files.${DOMAIN}`)
 
 volumes:
   file_db:
