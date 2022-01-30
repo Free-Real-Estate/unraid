@@ -1,34 +1,43 @@
 version: "3"
 services:
-  proxy-traefik:
-    image: traefik:v2.5
-    container_name: proxy-traefik
+  proxy-nginx:
+    container_name: proxy-nginx
+    image: nginx
     restart: unless-stopped
     networks:
       - fre
-      - default
+      - files
     ports:
       - "${PROXY_PORT}:80"
-      - 8080:8080
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./config/traefik.yml:/etc/traefik/traefik.yml
-    labels:
-      - traefik.http.routers.api.rule=Host(`traefik.${HOSTNAME}`)
-      - traefik.http.routers.api.service=api@internal
+      - ./config/nginx-proxy/nginx.conf:/etc/nginx/nginx.conf
+      - ./config/nginx-proxy/conf.d:/etc/nginx/conf.d
+    environment:
+      - DOMAIN=fre
+      - TLD=localhost
   file-server:
     image: filebrowser/filebrowser:s6
     container_name: file-server
     restart: unless-stopped
     networks:
-      - default
+      - files
     volumes:
       - ./config/filebrowser.json:/config/settings.json
       - ./data/users:/srv
       - ./data/db:/database
-    labels:
-      - traefik.http.routers.file-server.rule=Host(`files.${DOMAIN}`)
+  portainer:
+    image: portainer/portainer-ce
+    container_name: portainer
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - fre
+
+volumes:
+  portainer_data:
 
 networks:
   fre:
-  default:
+  files:
