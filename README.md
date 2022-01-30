@@ -12,5 +12,5 @@ The current config is still in beta and also comes with a portainer instance and
 First build the custom code-server image
 
 ```sh
-docker build -t fre/code-php -f Dockerfile https://github.com/Free-Real-Estate/code-nginx-php-docker
+docker build -t fre/code-php -f Dockerfile https://github.com/Free-Real-Estate/code-nginx-php-docker.git
 ```
