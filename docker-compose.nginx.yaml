@@ -12,6 +12,9 @@ services:
     volumes:
       - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./config/nginx/conf.d:/etc/nginx/conf.d
+    environment:
+      - DOMAIN=fre
+      - TLD=localhost
 
   file-server:
     image: filebrowser/filebrowser:s6
