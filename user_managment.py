@@ -52,7 +52,7 @@ def load_json(path):
 
 def start_code(user):
     global user_list
-    os.system('docker run -d --net=v1_free_real_estate --name=code-' + user + ' -e DOCKER_MODS=linuxserver/mods:code-server-php -e PUID=1000 -e PGID=1000 -e TZ=Europe/Paris -e HASHED_PASSWORD=' + user_list[user]['hash_pass'] + ' -v ' +
+    os.system('docker run -d --net=fre_free_real_estate --name=code-' + user + ' -e DOCKER_MODS=linuxserver/mods:code-server-php -e PUID=1000 -e PGID=1000 -e TZ=Europe/Paris -e HASHED_PASSWORD=' + user_list[user]['hash_pass'] + ' -v ' +
               config['users_code_data'] + user + ':/config -v ' + config['users_data'] + user + ':/config/workspace --restart unless-stopped ' + config['code_image'])
     user_list[user]['code_container_name'] = 'code-'+user
     user_list[user]['code_container_id'] = subprocess.getoutput(
@@ -63,7 +63,7 @@ def start_code(user):
 def start_web(user):
     global user_list
     os.system('docker run -d --restart=unless-stopped --name=' + user +
-              ' --net=v1_free_real_estate -v ' + config['users_data'] + user + ':/var/www/html:rw -v '+config['web_image_volume']['web_config'] + ':/etc/nginx/nginx.conf ' + config['web_image'])
+              ' --net=fre_free_real_estate -v ' + config['users_data'] + user + ':/var/www/html:rw -v '+config['web_image_volume']['web_config'] + ':/etc/nginx/nginx.conf ' + config['web_image'])
 
     user_list[user]['web_container_name'] = user
     user_list[user]['web_container_id'] = subprocess.getoutput(
@@ -73,7 +73,7 @@ def start_web(user):
 
 def start_user(user):
     global user_list
-    os.system('docker run -d --net=v1_free_real_estate --name=' + user + ' -e PUID=1000 -e PGID=1000 -e TZ=Europe/Paris -e HASHED_PASSWORD=' + user_list[user]['hash_pass'] + ' -v ' +
+    os.system('docker run -d --net=fre_free_real_estate --name=' + user + ' -e PUID=1000 -e PGID=1000 -e TZ=Europe/Paris -e HASHED_PASSWORD=' + user_list[user]['hash_pass'] + ' -v ' +
               config['users_code_data'] + user + ':/config -v ' + config['users_data'] + user + ':/config/workspace -v ' + config['web_image_volume']['web_config'] + ':/etc/nginx/nginx.conf ' ' --restart unless-stopped ' + "fre-user-docker:latest")
     user_list[user]['code_container_name'] = user
     user_list[user]['code_container_id'] = subprocess.getoutput(

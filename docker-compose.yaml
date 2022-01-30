@@ -34,9 +34,6 @@ services:
   
 volumes:
   portainer_data:
-  netdataconfig:
-  netdatalib:
-  netdatacache:
 
 networks:
   free_real_estate:
