@@ -7,7 +7,7 @@ docker run \
   -e PUID=1000 \
   -e PGID=1000 \
   -e TZ=${TZ} \
-  -e PASSWORD=$2 \
+  -e HASHED_PASSWORD=$2 \
   -e DOCKER_MODS="linuxserver/mods:code-server-extension-arguments" \
   -e VSCODE_EXTENSION_ID="yandeu.five-server|bmewburn.vscode-intelephense-client" \
   -v $(pwd)/../data/users/$1/.code:/config \
