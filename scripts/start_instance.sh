@@ -10,8 +10,8 @@ docker run \
   -e HASHED_PASSWORD=$2 \
   -e DOCKER_MODS="linuxserver/mods:code-server-extension-arguments" \
   -e VSCODE_EXTENSION_ID="yandeu.five-server|bmewburn.vscode-intelephense-client" \
-  -v $(pwd)/../data/users/$1/.code:/config \
-  -v $(pwd)/../data/users/$1/site:/config/workspace \
+  -v $(pwd)/data/users/$1/.code:/config \
+  -v $(pwd)/data/users/$1/site:/config/workspace \
   -d \
   --network fre_fre \
   --rm docker.io/fre/code-php
