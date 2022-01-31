@@ -1,40 +1,43 @@
 version: "3"
 services:
-  proxy:
-    container_name: "proxy"
+  proxy-nginx:
+    container_name: proxy-nginx
     image: nginx
-    restart: always
+    restart: unless-stopped
+    networks:
+      - fre
+      - files
     ports:
-      - "80:80"
-      - "443:443"
+      - "${PROXY_PORT}:80"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./config/nginx-proxy/nginx.conf:/etc/nginx/nginx.conf
+      - ./config/nginx-proxy/conf.d:/etc/nginx/conf.d
+    environment:
+      - DOMAIN=fre
+      - TLD=localhost
+  file-server:
+    image: filebrowser/filebrowser:s6
+    container_name: file-server
+    restart: unless-stopped
     networks:
-      - free_real_estate
-  files:
-    image: filebrowser/filebrowser:v2-alpine
-    restart: always
-    container_name: "files"
+      - files
     volumes:
-      - /home/fre/fre/users/data:/srv
-      - /home/fre/fre/filebrowser/filebrowser.db:/database.db
-      - /home/fre/fre/filebrowser/.filebrowser.json:/.filebrowser.json
-    networks:
-      - free_real_estate
+      - ./config/filebrowser.json:/config/settings.json
+      - ./data/users:/srv
+      - ./data/db:/database
   portainer:
     image: portainer/portainer-ce
     container_name: portainer
-    restart: always
+    restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
     networks:
-      - free_real_estate
-  
+      - fre
+
 volumes:
   portainer_data:
 
 networks:
-  free_real_estate:
-    driver: bridge
+  fre:
+  files:
