@@ -15,10 +15,11 @@ const settings = {
     script: __dirname + "/start_instance.sh",
     template: __dirname + "/../template/index.html",
     user_data: __dirname + "/../data/users/$$user/site/index.html",
+    data: __dirname + "/../data/users",
     instances: __dirname + "/../data/users.json",
     login_url: "https://files.by-cy.tech/api/login",
     post_url: "https://files.by-cy.tech/api/users",
-    new_user: `{"what":"user","which":[],"data":{"scope":".","locale":"en","viewMode":"mosaic","singleClick":false,"sorting":{"by":"","asc":false},"perm":{"admin":false,"execute":false,"create":true,"rename":true,"modify":true,"delete":true,"share":false,"download":true},"commands":[],"hideDotfiles":false,"dateFormat":false,"username":"$$username","passsword":"","rules":[],"lockPassword":false,"id":0,"password":"$$password"}}`
+    new_user: `{"what":"user","which":[],"data":{"scope":"$$username","locale":"en","viewMode":"mosaic","singleClick":false,"sorting":{"by":"","asc":false},"perm":{"admin":false,"execute":false,"create":true,"rename":true,"modify":true,"delete":true,"share":false,"download":true},"commands":[],"hideDotfiles":false,"dateFormat":false,"username":"$$username","passsword":"","rules":[],"lockPassword":false,"id":0,"password":"$$password"}}`
 }
 
 const instances = require(settings.instances);
@@ -64,7 +65,7 @@ async function doLogin() {
 
 // Creates user on filebrowser's admin page
 async function doCreateUser(jwt, user, password) {
-    let r = await doRequest(settings.post_url, "POST", {xauth: jwt, cookie: `auth=${jwt}`}, settings.new_user.replace("$$username", user).replace("$$password", password));
+    let r = await doRequest(settings.post_url, "POST", {xauth: jwt, cookie: `auth=${jwt}`}, settings.new_user.replace(/\$\$username/g, user).replace("$$password", password));
     return (await r.text() === "201 Created\n");
 }
 
@@ -73,6 +74,7 @@ async function copyFiles(user) {
     let r = true;
     try {
         fse.copySync(settings.template, settings.user_data.replace("$$user", user), overwrite = false);
+        await execSync("chmod -R 777 " + settings.data + "/" + user);
     } catch (error) {
         r = false;
     }
