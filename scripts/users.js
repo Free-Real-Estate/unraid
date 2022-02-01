@@ -1,4 +1,4 @@
-const { execFile } = require('child_process');
+const { execFileSync } = require('child_process');
 const { execSync } = require('child_process');
 
 // hash algo for code-server
@@ -83,7 +83,7 @@ async function copyFiles(user) {
 
 // Runs a docker via the instance script
 async function runDocker(user, password) {
-    await execFile(settings.script, [user, password], () => {});
+    await execFileSync(settings.script, [user, password]);
 }
 
 // Creates a new user docker
@@ -108,7 +108,7 @@ async function newInstance(user, password) {
 async function start(user) {
     if (instances.users[user]) {
         await runDocker(user, instances.users[user].password);
-        console.log("Started.");
+        console.log("Started " + user);
     } else {
         console.log("User does not exist.");
     }
@@ -118,10 +118,34 @@ async function start(user) {
 async function stop(user) {
     try {
         await execSync("docker stop " + user);
-        console.log("Stopped.");
+        console.log("Stopped " + user);
     } catch (error) {
         console.log(error.name);
     }
+}
+
+// Starts all containers
+async function startAll() {
+    console.log("Starting all containers...");
+    Object.keys(instances.users).forEach(c => {
+        try {
+            start(c);    
+        } catch (error) {
+            console.log("Container failed starting : " + c);
+        }
+    });
+}
+
+// Stops all containers
+async function stopAll() {
+    console.log("Stopping all containers...");
+    Object.keys(instances.users).forEach(c => {
+        try {
+            stop(c);    
+        } catch (error) {
+            console.log("Container failed stopping : " + c);
+        }
+    });
 }
 
 // Prints help
@@ -130,12 +154,14 @@ function help() {
     console.log("\tadd\tusername password\tAdds a new user");
     console.log("\tstart\tusername\t\tStarts container");
     console.log("\tstop\tusername\t\tStops container");
+    console.log("\startall\t\t\tStart all containers");
+    console.log("\tstopall\t\t\tStop all containers");
 
 }
 
 // Main
 (async () => {
-    if (process.argv.length < 4) {
+    if (process.argv.length < 3) {
         return help();
     }
     switch (process.argv[2]) {
@@ -150,6 +176,12 @@ function help() {
         case "stop":
             if (process.argv.length < 4) return help();
             stop(process.argv[3]);
+            break;
+        case "startall":
+            startAll();
+            break;
+        case "stopall":
+            stopAll();
             break;
         default:
             help();

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export $(grep -v '^#' ../.env)
+export $(grep -v '^#' .env)
 
 docker run \
   --name=$1 \
