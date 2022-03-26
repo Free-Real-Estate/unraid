@@ -12,6 +12,7 @@ docker run \
   -e VSCODE_EXTENSION_ID="yandeu.five-server|bmewburn.vscode-intelephense-client" \
   -v $(pwd)/data/users/$1/.code:/config \
   -v $(pwd)/data/users/$1/site:/config/workspace \
+  -v $(pwd)/data/users/$1/mysql:/var/lib/mysql \
   -d \
   --network fre_fre \
   --rm docker.io/fre/code-php
